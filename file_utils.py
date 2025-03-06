@@ -24,7 +24,14 @@ def read_docx_file(file_path):
     try:
         doc = docx.Document(file_path)
         full_text = [para.text for para in doc.paragraphs]
-        return '\n'.join(full_text)
+        
+        # Join text and limit to a maximum number of characters
+        text = '\n'.join(full_text)
+        max_chars = 1000  # Strict limit to avoid token context window issues
+        if len(text) > max_chars:
+            text = text[:max_chars] + "\n[Content truncated due to length]"
+            
+        return text
     except Exception as e:
         print(f"Error reading DOCX file {file_path}: {e}")
         return None
@@ -34,12 +41,18 @@ def read_pdf_file(file_path):
     try:
         doc = fitz.open(file_path)
         # Read only the first few pages to speed up processing
-        num_pages_to_read = 3  # Adjust as needed
+        num_pages_to_read = 2  # Reduced from 3 to 2
         full_text = []
         for page_num in range(min(num_pages_to_read, len(doc))):
             page = doc.load_page(page_num)
             full_text.append(page.get_text())
+        
+        # Join text and limit to a maximum number of characters
         pdf_content = '\n'.join(full_text)
+        max_chars = 1000  # Strict limit to avoid token context window issues
+        if len(pdf_content) > max_chars:
+            pdf_content = pdf_content[:max_chars] + "\n[Content truncated due to length]"
+        
         return pdf_content
     except Exception as e:
         print(f"Error reading PDF file {file_path}: {e}")
@@ -52,7 +65,14 @@ def read_spreadsheet_file(file_path):
             df = pd.read_csv(file_path)
         else:
             df = pd.read_excel(file_path)
+        
         text = df.to_string()
+        
+        # Limit to a maximum number of characters
+        max_chars = 1000  # Strict limit to avoid token context window issues
+        if len(text) > max_chars:
+            text = text[:max_chars] + "\n[Content truncated due to length]"
+            
         return text
     except Exception as e:
         print(f"Error reading spreadsheet file {file_path}: {e}")
@@ -67,7 +87,14 @@ def read_ppt_file(file_path):
             for shape in slide.shapes:
                 if hasattr(shape, "text"):
                     full_text.append(shape.text)
-        return '\n'.join(full_text)
+        
+        # Join text and limit to a maximum number of characters
+        text = '\n'.join(full_text)
+        max_chars = 1000  # Strict limit to avoid token context window issues
+        if len(text) > max_chars:
+            text = text[:max_chars] + "\n[Content truncated due to length]"
+            
+        return text
     except Exception as e:
         print(f"Error reading PowerPoint file {file_path}: {e}")
         return None
