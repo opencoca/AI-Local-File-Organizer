@@ -135,7 +135,10 @@ def get_mode_selection():
             print("Invalid selection. Please enter 1, 2, or 3. To exit, type '/exit'.")
 
 def main():
+    print("Setting up...")
     # Ensure NLTK data is downloaded efficiently and quietly
+    import nltk
+    nltk.download('punkt_tab')
     ensure_nltk_data()
 
     # Start with dry run set to True
