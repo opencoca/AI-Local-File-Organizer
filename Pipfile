@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+cmake = "*"
+pytesseract = "*"
+pymupdf = "*"
+python-docx = "*"
+pandas = "*"
+openpyxl = "*"
+xlrd = "*"
+nltk = "*"
+rich = "*"
+python-pptx = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"

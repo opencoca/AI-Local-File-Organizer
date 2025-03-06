@@ -6,6 +6,13 @@ __pycache__/
 # pytest cache directory
 .pytest_cache/
 
+# nltk data
+nltk_data/
+
+# Jython cache
+.jython/
+.jython_cache/
+
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
