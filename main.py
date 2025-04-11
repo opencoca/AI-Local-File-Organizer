@@ -69,9 +69,8 @@ def initialize_models():
                 max_new_tokens=3000,  # Adjust as needed
                 top_k=3,
                 top_p=0.3,
-                profiling=False
-                # add n_ctx if out of context window usage: n_ctx=2048
-
+                profiling=False,
+                n_ctx=8192  # Significantly increased context window to handle larger documents
             )
         print("**----------------------------------------------**")
         print("**       Image inference model initialized      **")

@@ -11,10 +11,17 @@ from data_processing_common import sanitize_filename
 
 def summarize_text_content(text, text_inference):
     """Summarize the given text content."""
-    prompt = f"""Provide a concise and accurate summary of the following text, focusing on the main ideas and key details.
-Limit your summary to a maximum of 150 words.
+    # Limit text length to avoid token context window issues
+    max_chars = 800
+    if len(text) > max_chars:
+        truncated_text = text[:max_chars] + "\n[Content truncated due to length]"
+    else:
+        truncated_text = text
 
-Text: {text}
+    prompt = f"""Provide a concise and accurate summary of the following text, focusing on the main ideas and key details.
+Limit your summary to a maximum of 100 words.
+
+Text: {truncated_text}
 
 Summary:"""
 
@@ -72,24 +79,9 @@ def generate_text_metadata(input_text, file_path, progress, task_id, text_infere
     progress.update(task_id, advance=1 / total_steps)
 
     # Step 2: Generate filename
-    filename_prompt =  f"""Based on the summary below, generate a specific and descriptive filename that captures the essence of the document.
-Limit the filename to a maximum of 3 words. Use nouns and avoid starting with verbs like 'depicts', 'shows', 'presents', etc.
-Do not include any data type words like 'text', 'document', 'pdf', etc. Use only letters and connect words with underscores.
-
-Summary: {description}
-
-Examples:
-1. Summary: A research paper on the fundamentals of string theory.
-   Filename: fundamentals_of_string_theory
-
-2. Summary: An article discussing the effects of climate change on polar bears.
-   Filename: climate_change_polar_bears
-
-Now generate the filename.
-
-Output only the filename, without any additional text.
-
-Filename:"""
+    filename_prompt = f"""Generate a 2-3 word descriptive filename for this document summary:
+{description}
+Use underscores between words. Output the filename only:"""
     filename_response = text_inference.create_completion(filename_prompt)
     filename = filename_response['choices'][0]['text'].strip()
     # Remove 'Filename:' prefix if present
@@ -97,24 +89,9 @@ Filename:"""
     progress.update(task_id, advance=1 / total_steps)
 
     # Step 3: Generate folder name from summary
-    foldername_prompt = f"""Based on the summary below, generate a general category or theme that best represents the main subject of this document.
-This will be used as the folder name. Limit the category to a maximum of 2 words. Use nouns and avoid verbs.
-Do not include specific details, words from the filename, or any generic terms like 'untitled' or 'unknown'.
-
-Summary: {description}
-
-Examples:
-1. Summary: A research paper on the fundamentals of string theory.
-   Category: physics
-
-2. Summary: An article discussing the effects of climate change on polar bears.
-   Category: environment
-
-Now generate the category.
-
-Output only the category, without any additional text.
-
-Category:"""
+    foldername_prompt = f"""Generate a 1-2 word category name for this document summary:
+{description}
+Output the category only:"""
     foldername_response = text_inference.create_completion(foldername_prompt)
     foldername = foldername_response['choices'][0]['text'].strip()
     # Remove 'Category:' prefix if present
